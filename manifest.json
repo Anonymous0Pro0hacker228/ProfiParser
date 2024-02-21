@@ -1,0 +1,27 @@
+{
+    "name": "Profi Parser",
+    "version": "1.0",
+    "description": "Parse profi.ru orders",
+    "permissions": ["storage", "tabs"],
+    "host_permissions": ["https://profi.ru"],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "content_scripts": [
+      {
+        "matches": ["https://*/*"],
+        "js": ["./contentScript.js"]
+      }
+    ],
+    
+    "action": {
+      "default_icon": {
+        "16": "assets/ext-icon.png",
+        "24": "assets/ext-icon.png",
+        "32": "assets/ext-icon.png"
+      },
+      "default_title": "Profi Parser",
+      "default_popup": "popup.html"
+    },
+    "manifest_version": 3
+}
