@@ -20,7 +20,7 @@
                         console.log(title);
                         const status = $(offers).find('.bo_text__16 bo_text ui-notice__text p').text();
                         console.log(status);
-                        if(staus =  'В этом заказе ваш отклик будет 1-м по рейтингу.'){
+                        if(staus ==  'В этом заказе ваш отклик будет 1-м по рейтингу.'){
                             ordersData.push(
                                 title,
                                 status,
