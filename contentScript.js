@@ -6,35 +6,45 @@
         const url = 'https://profi.ru/backoffice/n.php?o=';
         let startURL = 64648964;
         let ordersData = [];
-        for(let i = 0; i < 10;i++){
-            let currentURL = startURL + i;
-            async function getHTML(){
-                const {data: html} = await axios.get(url+currentURL);
-                return html;
-            }
+        try {
+            const browser = await puppeteer.launch();
+            const page = await browser.newPage();
         
-            getHTML.then((res) => {
-                const $ = cheerio.load(res);
-                $('.ContentStyles__Card-sc-19y55e6-0 duuUtg').each((i,offers) => {
-                        const title = $(offers).find('.bo_text__24 bo_text bo_text-extra-bold').text();
-                        console.log(title);
-                        const status = $(offers).find('.bo_text__16 bo_text ui-notice__text p').text();
-                        console.log(status);
-                        if(staus ==  'В этом заказе ваш отклик будет 1-м по рейтингу.'){
-                            ordersData.push(
-                                title,
-                                status,
-                                url+currentURL
-                            )
-                        }
-                        console.log(ordersData)
-                        
-                        
-                });
-            })
-        }
-
+            for(let i = 0; i < 100;i++){
+              let currentURL = startURL + i;
+        
+              await page.setViewport({width: 1080, height: 1024});
+        
+              await page.setDefaultNavigationTimeout(2 * 60 * 1000);
+        
+              await page.goto(url+currentURL);
+              
+              const title = await el.$eval(".order-card-header__title-container > p",(el) =>el.textContext);
+              const price = await el.$eval(".order-card-header__title-container > div > div:nth-child(1) > span",(el) =>el.textContext);
+              const status = await el.$eval(".ui-notice__content-container ui-notice__content-container-with-content > p",(el) =>el.textContext);
+              const url = await page.url;
+              ordersData.push({
+                title,
+                price,
+                status,
+                url
+              });
+        
+              if(index === ordersData.length - 1){
+                console.log(ordersData);
+                fs.writeFileSync("orders.json", ordersData);
+                await browser.close();
+              }
+            }
+    
+        }catch (error) {
+            
+            console.log(error);
+          }
     };
+            
+            
+
     
     chrome.runtime.onMessage.addListener((obj, sender, response) => {
         const { type, value, Id } = obj;
