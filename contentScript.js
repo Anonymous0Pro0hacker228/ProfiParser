@@ -1,7 +1,7 @@
+import puppeteer from 'puppeteer';
+import fs from "fs";
 (() => {
-    const axios = require('axios');
-    const cheerio = require('cheerio');
-    const fs = require('fs');
+
     const ParseProfi = async () =>{
         const url = 'https://profi.ru/backoffice/n.php?o=';
         let startURL = 64648964;
@@ -23,7 +23,8 @@
               const price = await el.$eval(".order-card-header__title-container > div > div:nth-child(1) > span",(el) =>el.textContext);
               const status = await el.$eval(".ui-notice__content-container ui-notice__content-container-with-content > p",(el) =>el.textContext);
               const url = await page.url;
-              ordersData.push({
+              if(status == "В этом заказе ваш отклик будет 1-м по рейтингу."){
+                ordersData.push({
                 title,
                 price,
                 status,
@@ -33,18 +34,20 @@
               if(index === ordersData.length - 1){
                 console.log(ordersData);
                 fs.writeFileSync("orders.json", ordersData);
-                await browser.close();
+                
               }
+              }
+              
             }
-    
-        }catch (error) {
+            await browser.close();
+            
+            
+          } catch (error) {
             
             console.log(error);
           }
-    };
-            
-            
 
+    };
     
     chrome.runtime.onMessage.addListener((obj, sender, response) => {
         const { type, value, Id } = obj;
