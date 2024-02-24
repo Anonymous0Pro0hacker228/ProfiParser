@@ -30,14 +30,9 @@ import fs from "fs";
                 status,
                 url
               });
-        
-              if(index === ordersData.length - 1){
-                console.log(ordersData);
-                fs.writeFileSync("orders.json", ordersData);
-                
-              }
-              }
-              
+              console.log(ordersData);
+                fs.writeFileSync("./orders.json", ordersData);
+            }
             }
             await browser.close();
             
